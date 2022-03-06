@@ -53,7 +53,8 @@ class wordle_problem:
                     self.contains = self.contains + self.previous_guesses[-1][x]
             if colours[x] == 'b':
                 for query_num in range(self.letters):
-                    self.query[query_num] = ''.join([x for x in self.query[query_num] if x != guess_x])
+                    if len(self.query[query_num]) > 1:
+                        self.query[query_num] = ''.join([x for x in self.query[query_num] if x != guess_x])
         print('Updated')
     
     def new_guess(self):

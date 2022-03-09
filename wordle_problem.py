@@ -44,17 +44,29 @@ class wordle_problem:
         green squares would be entered as 'bybbg'
         """
         for x in range(self.letters):
-            guess_x = self.previous_guesses[-1][x]
+            guess = self.previous_guesses[-1]
+            guess_x = guess[x]
             if colours[x] == 'g':
+                # If the square is green, the only possibility is the corresponding letter in the guess
                 self.query[x] = guess_x
             if colours[x] == 'y':
+                # If the square is yellow, that letter should be excluded from that position, but added the the list of letters known to be in the word
                 self.query[x] = ''.join([x for x in self.query[x] if x != guess_x])
                 if guess_x not in self.contains:
                     self.contains = self.contains + self.previous_guesses[-1][x]
             if colours[x] == 'b':
-                for query_num in range(self.letters):
-                    if len(self.query[query_num]) > 1:
-                        self.query[query_num] = ''.join([x for x in self.query[query_num] if x != guess_x])
+                # That square cannot be the corresponding letter from the guess
+                self.query[x] = ''.join([x for x in self.query[x] if x != guess_x])
+                # If all instance of that letter are produce a black response, that letter cannot be anywhere in the word
+                # Check whether all instance are black
+                all_black = True
+                for y in range(self.letters):
+                    if guess[y] == guess_x and colours[y] != 'b':
+                        all_black = False
+                # If so, remove that letter from the possibilities at every position
+                if all_black:
+                    for query_num in range(self.letters):
+                        self.query[query_num] = ''.join([x for x in self.query[query_num] if x != guess_x])        
         print('Updated')
     
     def new_guess(self):
